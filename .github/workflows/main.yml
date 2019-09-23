@@ -1,0 +1,33 @@
+on:
+  push: {}
+  schedule:
+  - cron:  '0 7 * * SUN'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: nixos/nix:2.2.1
+    strategy:
+      matrix:
+        nix_channel:
+        - https://nixos.org/channels/nixpkgs-unstable
+        - https://nixos.org/channels/nixos-unstable
+        - https://nixos.org/channels/nixos-19.03
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build and push to cachix
+      env:
+        CACHIX_CACHE: ${{ secrets.CACHIX_CACHE }}
+        CACHIX_SIGNING_KEY: ${{ secrets.CACHIX_SIGNING_KEY }}
+        NIX_CHANNEL: ${{ matrix.nix_channel }}
+      run: |
+        nix-channel --update
+        if [ -n "${CACHIX_CACHE}" ]; then nix-channel --update; fi
+        if [ -n "${CACHIX_CACHE}" ]; then nix-env -iA cachix -f https://cachix.org/api/v1/install; fi
+        if [ -n "${CACHIX_CACHE}" ]; then cachix use "${CACHIX_CACHE}"; fi
+        nix-channel --add "${NIX_CHANNEL}" nixpkgs
+        nix-channel --update
+        nix-build ci.nix -A buildOutputs
+        nix eval -f default.nix 'lib'
+        nix eval -f default.nix 'modules'
+        nix eval -f default.nix 'overlays'
+        if [ -n "${CACHIX_CACHE}" ]; then nix-build ci.nix -A cacheOutputs | cachix push "${CACHIX_CACHE}"; fi
