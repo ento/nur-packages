@@ -11,7 +11,8 @@ jobs:
         nix_channel:
         - https://nixos.org/channels/nixpkgs-unstable
         - https://nixos.org/channels/nixos-unstable
-        - https://nixos.org/channels/nixos-19.03
+        # buildGoModule produces a different modSha256: disable for now
+        #- https://nixos.org/channels/nixos-19.03
     steps:
     - uses: actions/checkout@v1
     - name: Build and push to cachix
