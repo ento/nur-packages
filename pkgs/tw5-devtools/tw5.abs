@@ -1,0 +1,34 @@
+# -*- mode: js; js-indent-level: 4;  -*-
+
+build_command = f(docker_args, docker_command_args, port, tw5_commands, wiki_dir) {
+    here = pwd()
+    command = []
+
+    if type(flag("path")) == "STRING" {
+        command += [flag("path"), wiki_dir]
+    } else {
+        user_id = `id -u`
+        group_id = `id -g`
+        docker_args = [
+            "-v", "$here:/wiki",
+            "-p", "$port:$port",
+            "--user", "$user_id:$group_id"
+        ] + (docker_args || [])
+        command += (["docker", "run"] + docker_args + ["tiddlywiki:latest"])
+        if !!docker_command_args {
+            command += docker_command_args
+        }
+        command.push("/wiki/$wiki_dir")
+    }
+
+    command += tw5_commands
+
+    tw5_flags = ["host"].filter(f(x){type(flag(x)) == "STRING"})
+    command += tw5_flags.map(f(x){
+        value = flag(x)
+        "$x=$value"
+    })
+    return command
+}
+
+return {"build_command": build_command}

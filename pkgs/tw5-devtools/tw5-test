@@ -1,0 +1,34 @@
+#!/usr/bin/env abs
+# -*- mode: js; js-indent-level: 4;  -*-
+
+if !`[ -f "./test/tiddlywiki.info" ]`.ok {
+    this = arg(1)
+    echo("please run $this from the project root")
+    exit(1)
+}
+
+tw5 = require("../lib/tw5.abs")
+node_args = []
+if type(flag("debug")) == "BOOLEAN"{
+    node_args.push("--inspect-brk=0.0.0.0")
+}
+command = tw5["build_command"](
+    ["--init", "--entrypoint", "node"],
+    node_args + ["/usr/local/bin/tiddlywiki"],
+    9229,
+    [
+        "--verbose",
+        "--version",
+        "--rendertiddler", "$:/core/save/all", "test.html", "text/plain"
+    ],
+    "test"
+)
+
+if flag("watch") {
+    command = "nix-shell --run \"bash -c 'find src/plugins test -type f | entr -d " + command.join(" ") + "'\""
+    while true {
+        exec(command)
+    }
+} else {
+    exec(command.join(" "))
+}

@@ -1,0 +1,43 @@
+#!/usr/bin/env abs
+# -*- mode: js; js-indent-level: 4;  -*-
+
+if !`[ -f "./plugin.dhall" ]`.ok {
+    this = arg(1)
+    echo("please run $this from the project root")
+    exit(1)
+}
+
+run = f(command) {
+    echo(command)
+    result = `$command`
+    if result.ok {
+        if result.trim().len() > 0 {
+            echo(result.trim())
+        }
+    } else {
+        echo(result.trim())
+    }
+}
+
+update = f(plugin_name, package_name, package_version, untar_options){
+    target_dir = "src/plugins/$plugin_name/files/$package_name"
+    run("rm -rf $target_dir")
+    run("mkdir -p $target_dir")
+    run("npm pack $package_name@$package_version")
+    tar_path = "$package_name-$package_version.tgz"
+    tar_command = [
+        "tar", "xfz", tar_path,
+        "-C", target_dir
+    ].join(" ") + " " + untar_options
+    run(tar_command)
+    run("rm $tar_path")
+}
+
+pluginSchema = "{ name : Text, npm_packages : List { name : Text, version : Text, untar : Text } }"
+plugin = `dhall-to-json <<< './plugin.dhall : $pluginSchema'`.json()
+
+if !!plugin["npm_packages"] {
+    for p in plugin["npm_packages"] {
+        update(plugin["name"], p["name"], p["version"], p["untar"])
+    }
+}

@@ -1,0 +1,31 @@
+#!/usr/bin/env abs
+# -*- mode: js; js-indent-level: 4;  -*-
+
+wiki_dir = "src"
+if flag("sandbox") {
+    wiki_dir = "sandbox"
+}
+
+if !`[ -f "./$wiki_dir/tiddlywiki.info" ]`.ok {
+    this = arg(1)
+    echo("please run $this from the project root")
+    exit(1)
+}
+
+tw5 = require("../lib/tw5.abs")
+command = tw5["build_command"](
+    null,
+    null,
+    8080,
+    ["--listen"],
+    wiki_dir
+)
+
+if flag("watch") {
+    command = "nix-shell --run \"bash -c 'find src/plugins -type f | entr -r -d " + command.join(" ") + "'\""
+    while true {
+        exec(command)
+    }
+} else {
+    exec(command.join(" "))
+}
