@@ -19,7 +19,7 @@ buildGoModule {
 
   # Use this line to use a fake sha when updating to a new version:
   #modSha256 = lib.fakeSha256;
-  modSha256 = "1yzk734ymdidjpzzyx9i2if12dss041fxp85d1afxqcn8aja6vaz";
+  modSha256 = "15cfhjw0r1d1156bk3kd5nwyx3gjcwharps1y1s2c6zg021m2lm4";
 
   meta = {
     description = "ABS programming language: the joy of shell scripting.";
