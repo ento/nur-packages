@@ -5,30 +5,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: nixos/nix:2.2.1
     strategy:
       matrix:
-        nix_channel:
-        - https://nixos.org/channels/nixpkgs-unstable
-        - https://nixos.org/channels/nixos-unstable
-        # buildGoModule produces a different modSha256: disable for now
-        #- https://nixos.org/channels/nixos-19.03
+        nixPath:
+          - nixpkgs=channel:nixos-unstable
+          - nixpkgs=channel:nixpkgs-unstable
+          - nixpkgs=channel:nixos-20.03
     steps:
-    - uses: actions/checkout@v1
-    - name: Build and push to cachix
-      env:
-        CACHIX_CACHE: ${{ secrets.CACHIX_CACHE }}
-        CACHIX_SIGNING_KEY: ${{ secrets.CACHIX_SIGNING_KEY }}
-        NIX_CHANNEL: ${{ matrix.nix_channel }}
-      run: |
-        nix-channel --update
-        if [ -n "${CACHIX_CACHE}" ]; then nix-channel --update; fi
-        if [ -n "${CACHIX_CACHE}" ]; then nix-env -iA cachix -f https://cachix.org/api/v1/install; fi
-        if [ -n "${CACHIX_CACHE}" ]; then cachix use "${CACHIX_CACHE}"; fi
-        nix-channel --add "${NIX_CHANNEL}" nixpkgs
-        nix-channel --update
-        nix-build ci.nix -A buildOutputs
-        nix eval -f default.nix 'lib'
-        nix eval -f default.nix 'modules'
-        nix eval -f default.nix 'overlays'
-        if [ -n "${CACHIX_CACHE}" ]; then nix-build ci.nix -A cacheOutputs | cachix push "${CACHIX_CACHE}"; fi
+    - uses: actions/checkout@v2.3.2
+    - name: Install nix
+      uses: cachix/install-nix-action@v10
+      with:
+        nix_path: "${{ matrix.nixPath }}"
+    - name: Show nixpkgs version
+      run: nix-instantiate --eval -E '(import <nixpkgs> {}).lib.version'
+    - name: Setup cachix
+      uses: cachix/cachix-action@v6
+      with:
+        name: ${{ secrets.CACHIX_CACHE }}
+        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    - name: Build nix packages
+      # TODO switch to default nixpkgs channel once nix-build-uncached 1.0.0 is in stable
+      run: nix run -I 'nixpkgs=channel:nixos-unstable' nixpkgs.nix-build-uncached -c nix-build-uncached ci.nix -A cacheOutputs
