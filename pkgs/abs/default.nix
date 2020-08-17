@@ -23,6 +23,13 @@ buildGoModule {
   doCheck = true;
   checkPhase = ''
     runHook preCheck
+
+    # skip some tests
+    substituteInPlace util/check_update_test.go \
+      --replace \
+      'func TestUpdateAvailable(t *testing.T) {' \
+      'func TestUpdateAvailable(t *testing.T) {  t.Skip("Skipping test that requires internet access");'
+
     # taken from the project's .travis.yml
     export CONTEXT=abs
     go test `go list ./... | grep -v "/js"` -vet=off
