@@ -20,6 +20,15 @@ buildGoModule {
   #vendorSha256 = lib.fakeSha256;
   vendorSha256 = "0waawwbz6mmr9vv1qil59x1v6803zlpc0ls9mdxc6fbip4mrwicp";
 
+  doCheck = true;
+  checkPhase = ''
+    runHook preCheck
+    # taken from the project's .travis.yml
+    export CONTEXT=abs
+    go test `go list ./... | grep -v "/js"` -vet=off
+    runHook postCheck
+  '';
+
   meta = {
     description = "ABS programming language: the joy of shell scripting.";
     homepage = https://github.com/abs-lang/abs;
