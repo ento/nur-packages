@@ -11,6 +11,7 @@ jobs:
           - nixpkgs=channel:nixos-unstable
           - nixpkgs=channel:nixpkgs-unstable
           - nixpkgs=channel:nixos-20.03
+      fail-fast: false
     steps:
     - uses: actions/checkout@v2.3.2
     - name: Install nix
