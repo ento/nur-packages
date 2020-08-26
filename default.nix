@@ -12,6 +12,7 @@ let
   callPackage = pkgs.newScope self;
   self = rec {
     abs = callPackage ./pkgs/abs {};
+    aozora-epub3 = callPackage ./pkgs/aozora-epub3 {};
     tw5-devtools = callPackage ./pkgs/tw5-devtools {};
   };
 in self // {
