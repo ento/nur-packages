@@ -1,0 +1,12 @@
+diff --git a/src/com/github/hmdev/writer/Epub3Writer.java b/src/com/github/hmdev/writer/Epub3Writer.java
+index 9c05f46..4fdfeb3 100644
+--- a/src/com/github/hmdev/writer/Epub3Writer.java
++++ b/src/com/github/hmdev/writer/Epub3Writer.java
+@@ -281,6 +281,7 @@ public class Epub3Writer
+ 	public Epub3Writer(String templatePath)
+ 	{
+ 		this.templatePath = templatePath;
++		Velocity.setProperty("file.resource.loader.path", "");
+ 		//初回実行時のみ有効
+ 		Velocity.init();
+ 		this.sectionInfos = new Vector<SectionInfo>();

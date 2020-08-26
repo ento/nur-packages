@@ -1,0 +1,13 @@
+diff --git a/src/AozoraEpub3.java b/src/AozoraEpub3.java
+index 19b9be0..cbfda1d 100644
+--- a/src/AozoraEpub3.java
++++ b/src/AozoraEpub3.java
+@@ -37,7 +37,7 @@ public class AozoraEpub3
+ 	public static void main(String args[])
+ 	{
+ 		String jarPath = System.getProperty("java.class.path");
+-		int idx = jarPath.indexOf(";");
++		int idx = jarPath.indexOf(System.getProperty("path.separator"));
+ 		if (idx > 0) jarPath = jarPath.substring(0, idx);
+ 		if (!jarPath.endsWith(".jar")) jarPath = "";
+ 		else jarPath = jarPath.substring(0, jarPath.lastIndexOf(File.separator)+1);
