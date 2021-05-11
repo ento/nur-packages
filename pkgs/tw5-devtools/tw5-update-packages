@@ -21,13 +21,13 @@ run = f(command) {
 
 update = f(plugin_name, package_name, package_version, untar_options){
     target_dir = "src/plugins/$plugin_name/files/$package_name"
-    run("rm -rf $target_dir")
-    run("mkdir -p $target_dir")
+    run("rm -rf '$target_dir'")
+    run("mkdir -p '$target_dir'")
     run("npm pack $package_name@$package_version")
     tar_path = "$package_name-$package_version.tgz"
     tar_command = [
         "tar", "xfz", tar_path,
-        "-C", target_dir
+        "-C", "'$target_dir'"
     ].join(" ") + " " + untar_options
     run(tar_command)
     run("rm $tar_path")
