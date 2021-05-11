@@ -27,5 +27,5 @@ if flag("watch") {
         exec(command)
     }
 } else {
-    exec(command.join(" "))
+    exec("nix-shell --run \"" + command.join(" ") + "\"")
 }
