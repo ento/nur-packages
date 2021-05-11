@@ -15,7 +15,7 @@ build_command = f(docker_args, docker_command_args, port, tw5_commands, wiki_dir
             "--user", "$user_id:$group_id",
             "-e", "TIDDLYWIKI_PLUGIN_PATH"
         ] + (docker_args || [])
-        command += (["docker", "run"] + docker_args + ["tiddlywiki:latest"])
+        command += (["docker", "run"] + docker_args + ["elasticdog/tiddlywiki:latest"])
         if !!docker_command_args {
             command += docker_command_args
         }
