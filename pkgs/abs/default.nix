@@ -1,6 +1,6 @@
 { lib, buildGoModule, fetchFromGitHub, ... }:
 
-let version = "2.3.0"; in
+let version = "2.7.2"; in
 
 buildGoModule {
   pname = "abs";
@@ -10,15 +10,10 @@ buildGoModule {
     owner = "abs-lang";
     repo = "abs";
     rev = "${version}";
-    # You can get this value by running:
-    # nix-prefetch-url --unpack --type sha256 https://github.com/abs-lang/abs/archive/${version}.tar.gz
-    #sha256 = lib.fakeSha256;
-    sha256 = "1faszdc6fjbhybyszh0287ymjfygi3p5rvcv8rzj622wf53yqkra";
+    sha256 = "sha256-lzJxq+bb4lORvAYzuO4O+vNmUbEbgXeLhU5JF42nCHM=";
   };
 
-  # Use this line to use a fake sha when updating to a new version:
-  #vendorSha256 = lib.fakeSha256;
-  vendorSha256 = "0waawwbz6mmr9vv1qil59x1v6803zlpc0ls9mdxc6fbip4mrwicp";
+  vendorHash = "sha256-C0373tZuGkoe5y1PgPtzaT/CeCFLqIEMPU2Kgki5ANk=";
 
   doCheck = true;
   checkPhase = ''
