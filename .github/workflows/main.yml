@@ -25,6 +25,9 @@ jobs:
       with:
         name: ${{ secrets.CACHIX_CACHE }}
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    - name: Install nix-build-uncached
+      run: |
+        nix profile install nixpkgs#nix-build-uncached
     - name: Build nix packages
-      # TODO switch to default nixpkgs channel once nix-build-uncached 1.0.0 is in stable
-      run: nix run -I 'nixpkgs=channel:nixos-unstable' nixpkgs.nix-build-uncached -c nix-build-uncached ci.nix -A cacheOutputs
+      run: |
+        nix-build-uncached ci.nix -A cacheOutputs
